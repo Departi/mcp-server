@@ -1,0 +1,16 @@
+name: departi
+description: Travel compliance and trip planning for digital nomads — visa requirements, tax residency analysis, Schengen day tracking, and curated accommodation, transport, and experience search across 189 European destinations.
+vendor: Departi
+sourceUrl: https://github.com/Departi/mcp-server
+homepage: https://departi.eu
+documentation: https://departi.eu/developers/mcp
+
+startCommand:
+  type: http
+  configSchema:
+    type: object
+    properties:
+      url:
+        type: string
+        default: "https://mcp.departi.eu/v3"
+        description: "MCP endpoint URL. Use /v3 for anonymous access or /v3/oauth for personalized results."
