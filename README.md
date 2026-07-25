@@ -1,5 +1,7 @@
 # Departi MCP Server
 
+[![Glama](https://glama.ai/mcp/servers/Departi/mcp-server/badge)](https://glama.ai/mcp/servers/Departi/mcp-server)
+
 Travel compliance and trip planning for digital nomads and long-term travelers.
 
 Departi helps you navigate the legal complexity of living abroad — visa requirements for any nationality/destination pair, tax residency analysis across 49 countries, Schengen 90/180-day tracking, and curated accommodation, transport, and experience search across 189 European destinations.
