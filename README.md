@@ -1,10 +1,8 @@
 # Departi MCP Server
 
-[![Glama](https://glama.ai/mcp/servers/Departi/mcp-server/badge)](https://glama.ai/mcp/servers/Departi/mcp-server)
+Travel compliance and curated booking for digital nomads and long-term travelers.
 
-Travel compliance and trip planning for digital nomads and long-term travelers.
-
-Departi helps you navigate the legal complexity of living abroad — visa requirements for any nationality/destination pair, tax residency analysis across 49 countries, Schengen 90/180-day tracking, and curated accommodation, transport, and experience search across 189 European destinations.
+Departi helps you navigate the legal complexity of living abroad — visa requirements for any nationality/destination pair, tax residency analysis across 43 countries, Schengen 90/180-day tracking, and persona-curated accommodation, transport, and experience search across 105 European destinations.
 
 ## Endpoint
 
@@ -17,29 +15,29 @@ https://mcp.departi.eu/v3
 
 ## Tools
 
-All 7 tools are **read-only** with full [MCP tool annotations](https://modelcontextprotocol.io/docs/concepts/tools#tool-annotations).
+All 7 tools are read-only with full MCP tool annotations.
 
 ### Compliance
 
 | Tool | Description |
 |---|---|
-| `departi_check_visa` | Visa requirements for any nationality/destination pair. Visa type, maximum stay, required documents, digital nomad visa availability. Covers 406 origin countries across 42 European destinations. |
-| `departi_check_tax` | Tax residency analysis — income tax rates, treaty applicability, social security obligations, FEIE eligibility (US citizens), and filing requirements. 49 countries with full fiscal profiles. |
-| `departi_track_schengen` | Real-time 90/180-day Schengen calculator for non-Schengen nationals. Days used, days remaining, overstay risk warnings, and re-entry date projections. |
+| `departi_check_visa` | Visa requirements for 43 European countries. Covers tourist, nomad, work, study, retirement. Includes destination context. Personalizes when registered. |
+| `departi_check_tax` | Tax residency analysis for 43 countries. Treaties, DN regimes, social security. Advisory only. |
+| `departi_track_schengen` | Schengen 90/180 calculator with tax residency warnings. Persistent tracking when registered. |
 
 ### Trip Planning
 
 | Tool | Description |
 |---|---|
-| `departi_search_accommodation` | Curated accommodation with pricing across 189 European destinations. Persona-matched results (budget, mid-range, premium) with availability and booking links. |
-| `departi_search_transport` | Flights, trains, and buses with pricing, travel time, and carrier details. Multi-modal results for complete route planning. |
-| `departi_search_experiences` | Tours, activities, and local experiences matched to traveler personality. Curated beyond tourist traps. |
+| `departi_search_accommodation` | Accommodation search across European destinations. Scored by traveler type. Returns booking links. |
+| `departi_search_transport` | Flight search: budget and full-service carriers. Returns pricing, stops, booking links. |
+| `departi_search_experiences` | Tours, activities, local experiences. Matched to traveler personality. Returns booking links. |
 
 ### Profile
 
 | Tool | Description |
 |---|---|
-| `departi_get_profile` | Authenticated user's nationality, tax residence, traveler type, travel history, and preferences. Powers personalized responses across all other tools. |
+| `departi_get_profile` | User profile: preferences, travel history, subscription tier, compliance summary. Requires auth. |
 
 ## Quick Start
 
@@ -73,7 +71,7 @@ For personalized results (visa checks based on your nationality, Schengen tracki
 
 ### Claude.ai (Custom Connector)
 
-1. Go to Settings → Connectors → Add custom connector
+1. Go to **Settings → Connectors → Add custom connector**
 2. Enter URL: `https://mcp.departi.eu/v3/oauth`
 3. Approve the OAuth consent screen
 4. Connected — try the example prompts below
@@ -110,23 +108,26 @@ For personalized results (visa checks based on your nationality, Schengen tracki
 - **Token lifetimes:** Access 1h, refresh 30d with rotation
 
 Discovery endpoints:
-- `https://mcp.departi.eu/.well-known/oauth-protected-resource/v3/oauth`
-- `https://departi.eu/.well-known/oauth-authorization-server`
+
+```
+https://mcp.departi.eu/.well-known/oauth-protected-resource/v3/oauth
+https://departi.eu/.well-known/oauth-authorization-server
+```
 
 ## Use Cases
 
-- **Digital nomads** checking visa and tax obligations before relocating
-- **Remote workers** understanding FEIE eligibility and tax home rules
-- **Long-term travelers** tracking Schengen days to avoid overstays
-- **Travel planners** finding accommodation, transport, and experiences in one query
-- **Tax advisors** comparing residency regimes across European countries
-- **AI agents** building travel compliance into automated itinerary planning
+- Digital nomads checking visa and tax obligations before relocating
+- Remote workers understanding FEIE eligibility and tax home rules
+- Long-term travelers tracking Schengen days to avoid overstays
+- Travel planners finding accommodation, transport, and experiences in one query
+- Tax advisors comparing residency regimes across European countries
+- AI agents building travel compliance into automated itinerary planning
 
 ## Data Coverage
 
-- **Visa data:** 406 origin countries × 42 European destinations
-- **Tax profiles:** 49 countries with income tax, social security, treaty, and filing data
-- **Accommodation:** 189 European destinations with curated properties
+- **Visa data:** 43 European destination countries, all nationalities
+- **Tax profiles:** 43 countries with income tax, social security, treaty, and filing data
+- **Accommodation:** 105 European destinations with 6,400+ persona-scored properties
 - **Transport:** Flights, trains, buses across Europe
 - **Experiences:** Activities and tours in all covered destinations
 
@@ -139,9 +140,9 @@ Discovery endpoints:
 
 ## Support
 
-- Email: support@departi.eu
-- Issues: [GitHub Issues](https://github.com/Departi/mcp-server/issues)
+- **Email:** support@departi.eu
+- **Issues:** [GitHub Issues](https://github.com/Departi/mcp-server/issues)
 
 ## License
 
-This repository contains documentation and configuration for the Departi MCP server. The server itself is a hosted service at `mcp.departi.eu`. See [Terms of Service](https://departi.eu/terms) for usage terms.
+This repository contains documentation and configuration for the Departi MCP server. The server itself is a hosted service at mcp.departi.eu. See [Terms of Service](https://departi.eu/terms) for usage terms.
