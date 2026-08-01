@@ -1,226 +1,205 @@
 {
-  "tools": [
-    {
-      "name": "departi_check_visa",
-      "title": "Check Visa Requirements",
-      "description": "Check visa requirements for any nationality/destination pair. Returns visa type, maximum stay duration, required documents, and digital nomad visa availability. Covers 406 origin countries across 42 European destinations.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "nationality": {
-            "type": "string",
-            "description": "ISO 3166-1 alpha-2 country code of the traveler's nationality (e.g., 'US', 'GB', 'DE')"
+    "tools": [
+          {
+                  "name": "departi_check_visa",
+                  "annotations": {
+                            "title": "Check Visa Requirements",
+                            "readOnlyHint": true,
+                            "destructiveHint": false,
+                            "idempotentHint": true,
+                            "openWorldHint": false
+                  },
+                  "description": "Visa requirements for 43 European countries. Covers tourist, nomad, work, study, retirement. Includes destination context. Personalizes when registered.",
+                  "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                        "nationality": { "type": "string", "description": "ISO alpha-2, e.g. 'BE'" },
+                                        "destination": { "type": "string", "description": "ISO alpha-2, e.g. 'PT'" },
+                                        "purpose": {
+                                                      "type": "string",
+                                                      "description": "e.g. 'tourism', 'remote_work', 'business', 'study', 'retirement'",
+                                                      "default": "tourism"
+                                        },
+                                        "duration": { "type": "integer", "description": "Stay in days" },
+                                        "locale": { "type": "string", "default": "en" },
+                                        "currency": { "type": "string", "default": "EUR" }
+                            },
+                            "required": ["nationality", "destination", "duration"]
+                  }
           },
-          "destination": {
-            "type": "string",
-            "description": "ISO 3166-1 alpha-2 country code of the destination (e.g., 'PT', 'BG', 'HR')"
+          {
+                  "name": "departi_track_schengen",
+                  "annotations": {
+                            "title": "Track Schengen Days",
+                            "readOnlyHint": true,
+                            "destructiveHint": false,
+                            "idempotentHint": true,
+                            "openWorldHint": false
+                  },
+                  "description": "Schengen 90/180 calculator with tax residency warnings. Persistent tracking when registered.",
+                  "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                        "entries": {
+                                                      "type": "array",
+                                                      "items": {
+                                                                      "type": "object",
+                                                                      "properties": {
+                                                                                        "country": { "type": "string" },
+                                                                                        "entryDate": { "type": "string", "format": "date" },
+                                                                                        "exitDate": { "type": "string", "format": "date" }
+                                                                      },
+                                                                      "required": ["country", "entryDate", "exitDate"]
+                                                      }
+                                        },
+                                        "referenceDate": { "type": "string", "format": "date" },
+                                        "nationality": { "type": "string" },
+                                        "locale": { "type": "string", "default": "en" },
+                                        "currency": { "type": "string", "default": "EUR" }
+                            },
+                            "required": ["entries"]
+                  }
           },
-          "purpose": {
-            "type": "string",
-            "enum": ["tourism", "remote_work", "business", "study"],
-            "description": "Purpose of travel"
+          {
+                  "name": "departi_check_tax",
+                  "annotations": {
+                            "title": "Check Tax Residency",
+                            "readOnlyHint": true,
+                            "destructiveHint": false,
+                            "idempotentHint": true,
+                            "openWorldHint": false
+                  },
+                  "description": "Tax residency analysis for 43 countries. Treaties, DN regimes, social security. Advisory only.",
+                  "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                        "nationality": { "type": "string" },
+                                        "taxResidence": { "type": "string", "description": "Current tax home country" },
+                                        "destination": { "type": "string" },
+                                        "duration": { "type": "integer" },
+                                        "purpose": {
+                                                      "type": "string",
+                                                      "description": "e.g. 'tourism', 'remote_work', 'business'",
+                                                      "default": "tourism"
+                                        },
+                                        "employmentType": {
+                                                      "type": "string",
+                                                      "description": "e.g. 'employed', 'self_employed', 'company_director', 'retired'"
+                                        },
+                                        "yearToDateDays": { "type": "integer", "default": 0 },
+                                        "locale": { "type": "string", "default": "en" },
+                                        "currency": { "type": "string", "default": "EUR" }
+                            },
+                            "required": ["nationality", "taxResidence", "destination", "duration"]
+                  }
           },
-          "duration_days": {
-            "type": "integer",
-            "description": "Planned stay duration in days"
+          {
+                  "name": "departi_search_accommodation",
+                  "annotations": {
+                            "title": "Search Accommodation",
+                            "readOnlyHint": true,
+                            "destructiveHint": false,
+                            "idempotentHint": true,
+                            "openWorldHint": true
+                  },
+                  "description": "Accommodation search across European destinations. Scored by traveler type. Returns booking links.",
+                  "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                        "destination": { "type": "string" },
+                                        "checkin": { "type": "string", "format": "date" },
+                                        "checkout": { "type": "string", "format": "date" },
+                                        "guests": { "type": "integer", "default": 1 },
+                                        "rooms": { "type": "integer", "default": 1 },
+                                        "maxPrice": { "type": "number", "description": "Per night in EUR" },
+                                        "currency": { "type": "string", "default": "EUR" },
+                                        "locale": { "type": "string", "default": "en" },
+                                        "persona": {
+                                                      "type": "string",
+                                                      "description": "e.g. 'culture_explorer', 'foodie', 'adventure'"
+                                        },
+                                        "traveler_type": {
+                                                      "type": "string",
+                                                      "description": "e.g. 'digital_nomad', 'slow_traveler', 'weekend_breaker'"
+                                        }
+                            },
+                            "required": ["destination", "checkin", "checkout"]
+                  }
+          },
+          {
+                  "name": "departi_search_transport",
+                  "annotations": {
+                            "title": "Search Flights",
+                            "readOnlyHint": true,
+                            "destructiveHint": false,
+                            "idempotentHint": true,
+                            "openWorldHint": true
+                  },
+                  "description": "Flight search: budget and full-service carriers. Returns pricing, stops, booking links.",
+                  "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                        "origin": { "type": "string", "description": "IATA or city, e.g. 'BRU'" },
+                                        "destination": { "type": "string", "description": "IATA or city, e.g. 'LIS'" },
+                                        "departure_date": { "type": "string", "format": "date" },
+                                        "return_date": { "type": "string", "format": "date" },
+                                        "passengers": { "type": "integer", "default": 1 },
+                                        "mode": {
+                                                      "type": "string",
+                                                      "default": "all",
+                                                      "description": "'all', 'flights', or 'ground'"
+                                        },
+                                        "traveler_type": {
+                                                      "type": "string",
+                                                      "description": "e.g. 'digital_nomad', 'weekend_breaker'"
+                                        }
+                            },
+                            "required": ["origin", "destination", "departure_date"]
+                  }
+          },
+          {
+                  "name": "departi_search_experiences",
+                  "annotations": {
+                            "title": "Search Experiences",
+                            "readOnlyHint": true,
+                            "destructiveHint": false,
+                            "idempotentHint": true,
+                            "openWorldHint": true
+                  },
+                  "description": "Tours, activities, local experiences. Matched to traveler personality. Returns booking links.",
+                  "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                        "destination": { "type": "string" },
+                                        "categories": {
+                                                      "type": "array",
+                                                      "items": { "type": "string" },
+                                                      "description": "e.g. 'cultural', 'culinary', 'adventure', 'wellness', 'nature'"
+                                        },
+                                        "persona": {
+                                                      "type": "string",
+                                                      "description": "e.g. 'culture_explorer', 'foodie', 'adventure'"
+                                        },
+                                        "traveler_type": {
+                                                      "type": "string",
+                                                      "description": "e.g. 'digital_nomad', 'slow_traveler'"
+                                        },
+                                        "limit": { "type": "integer", "default": 10 }
+                            },
+                            "required": ["destination"]
+                  }
+          },
+          {
+                  "name": "departi_get_profile",
+                  "annotations": {
+                            "title": "Get User Profile",
+                            "readOnlyHint": true,
+                            "destructiveHint": false,
+                            "idempotentHint": true,
+                            "openWorldHint": false
+                  },
+                  "description": "User profile: preferences, travel history, subscription tier, compliance summary. Requires auth.",
+                  "inputSchema": { "type": "object", "properties": {}, "required": [] }
           }
-        },
-        "required": ["nationality", "destination"]
-      },
-      "annotations": {
-        "title": "Check Visa Requirements",
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      }
-    },
-    {
-      "name": "departi_check_tax",
-      "title": "Check Tax Implications",
-      "description": "Analyze tax residency implications for a given country. Returns income tax rates, treaty applicability, social security obligations, FEIE eligibility (US citizens), and filing requirements. Covers 49 countries with full fiscal profiles.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "country": {
-            "type": "string",
-            "description": "ISO 3166-1 alpha-2 country code to check tax implications for"
-          },
-          "nationality": {
-            "type": "string",
-            "description": "Traveler's nationality for treaty lookups"
-          },
-          "income_usd": {
-            "type": "number",
-            "description": "Annual income in USD for rate calculations"
-          }
-        },
-        "required": ["country"]
-      },
-      "annotations": {
-        "title": "Check Tax Implications",
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      }
-    },
-    {
-      "name": "departi_track_schengen",
-      "title": "Track Schengen Days",
-      "description": "Calculate 90/180-day Schengen zone usage for non-Schengen nationals. Returns days used, days remaining, overstay risk level, next safe entry date, and rolling window projections. Uses authenticated user's travel history when available.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "nationality": {
-            "type": "string",
-            "description": "ISO 3166-1 alpha-2 country code of the traveler"
-          },
-          "entries": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "country": { "type": "string" },
-                "entry_date": { "type": "string", "format": "date" },
-                "exit_date": { "type": "string", "format": "date" }
-              }
-            },
-            "description": "Travel history entries (optional if authenticated — uses profile data)"
-          }
-        }
-      },
-      "annotations": {
-        "title": "Track Schengen Days",
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      }
-    },
-    {
-      "name": "departi_search_accommodation",
-      "title": "Search Accommodation",
-      "description": "Search curated accommodation with pricing across 189 European destinations. Returns persona-matched results (budget, mid-range, premium) with availability, pricing, and booking links.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "destination": {
-            "type": "string",
-            "description": "City or destination name"
-          },
-          "checkin": {
-            "type": "string",
-            "format": "date",
-            "description": "Check-in date"
-          },
-          "checkout": {
-            "type": "string",
-            "format": "date",
-            "description": "Check-out date"
-          },
-          "budget": {
-            "type": "string",
-            "enum": ["budget", "mid_range", "premium"],
-            "description": "Budget tier preference"
-          },
-          "guests": {
-            "type": "integer",
-            "description": "Number of guests"
-          }
-        },
-        "required": ["destination"]
-      },
-      "annotations": {
-        "title": "Search Accommodation",
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": true
-      }
-    },
-    {
-      "name": "departi_search_transport",
-      "title": "Search Transport",
-      "description": "Search flights, trains, and buses with pricing, travel time, and carrier details. Multi-modal results for complete route planning across Europe.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "origin": {
-            "type": "string",
-            "description": "Departure city or IATA airport code"
-          },
-          "destination": {
-            "type": "string",
-            "description": "Arrival city or IATA airport code"
-          },
-          "date": {
-            "type": "string",
-            "format": "date",
-            "description": "Travel date"
-          },
-          "mode": {
-            "type": "string",
-            "enum": ["flight", "train", "bus", "any"],
-            "description": "Transport mode filter"
-          }
-        },
-        "required": ["origin", "destination"]
-      },
-      "annotations": {
-        "title": "Search Transport",
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": true
-      }
-    },
-    {
-      "name": "departi_search_experiences",
-      "title": "Search Experiences",
-      "description": "Search tours, activities, and local experiences matched to traveler personality. Curated beyond tourist traps — local food tours, cultural workshops, outdoor adventures, and more.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "destination": {
-            "type": "string",
-            "description": "City or destination name"
-          },
-          "category": {
-            "type": "string",
-            "description": "Experience category (e.g., 'food', 'culture', 'adventure', 'nature')"
-          },
-          "date": {
-            "type": "string",
-            "format": "date",
-            "description": "Preferred date"
-          }
-        },
-        "required": ["destination"]
-      },
-      "annotations": {
-        "title": "Search Experiences",
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": true
-      }
-    },
-    {
-      "name": "departi_get_profile",
-      "title": "Get Travel Profile",
-      "description": "Retrieve the authenticated user's travel profile — nationality, tax residence, traveler type, travel history, and preferences. Powers personalized responses across all other tools. Requires OAuth authentication.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {}
-      },
-      "annotations": {
-        "title": "Get Travel Profile",
-        "readOnlyHint": true,
-        "destructiveHint": false,
-        "idempotentHint": true,
-        "openWorldHint": false
-      }
-    }
-  ]
+    ]
 }
