@@ -1,8 +1,8 @@
 # Departi MCP Server
 
-Travel compliance and curated booking for digital nomads and long-term travelers.
+Travel-compliance intelligence and curated booking for digital nomads and long-stay travellers.
 
-Departi helps you navigate the legal complexity of living abroad — visa requirements for any nationality/destination pair, tax residency analysis across 43 countries, Schengen 90/180-day tracking, and persona-curated accommodation, transport, and experience search across 105 European destinations.
+Departi helps you navigate the legal complexity of living abroad — visa requirements for any nationality/destination pair, permit-aware Schengen 90/180-day tracking, tax residency analysis with double-tax-treaty coverage across 55 countries, and persona-curated accommodation, transport, and experience search across 189 European destinations.
 
 ## Endpoint
 
@@ -21,23 +21,23 @@ All 7 tools are read-only with full MCP tool annotations.
 
 | Tool | Description |
 |---|---|
-| `departi_check_visa` | Visa requirements for 43 European countries. Covers tourist, nomad, work, study, retirement. Includes destination context. Personalizes when registered. |
-| `departi_check_tax` | Tax residency analysis for 43 countries. Treaties, DN regimes, social security. Advisory only. |
-| `departi_track_schengen` | Schengen 90/180 calculator with tax residency warnings. Persistent tracking when registered. |
+| `departi_check_visa` | Returns entry/visa options for a traveller — visa type, max stay, remote-work eligibility, cost, processing time, and application notes. |
+| `departi_check_tax` | Tax-residency risk and double-tax-treaty analysis — threshold, day-counting method, treaty provisions, DN regimes, FEIE context. Advisory only. |
+| `departi_track_schengen` | Schengen 90/180 calculator — days used/remaining, status, projected limit date. Permit-aware: excludes permit-issuing country from count. |
 
 ### Trip Planning
 
 | Tool | Description |
 |---|---|
-| `departi_search_accommodation` | Accommodation search across European destinations. Scored by traveler type. Returns booking links. |
-| `departi_search_transport` | Flight search: budget and full-service carriers. Returns pricing, stops, booking links. |
-| `departi_search_experiences` | Tours, activities, local experiences. Matched to traveler personality. Returns booking links. |
+| `departi_search_accommodation` | Ranked accommodation with name, price, rating, facilities, persona-fit score, and booking deep-link. |
+| `departi_search_transport` | Flight search across Duffel + Travelpayouts — carrier, price, cabin class, duration, stops, and booking deep-link. |
+| `departi_search_experiences` | Tours, activities, local experiences — category, duration, price, persona-fit score, and booking deep-link. |
 
 ### Profile
 
 | Tool | Description |
 |---|---|
-| `departi_get_profile` | User profile: preferences, travel history, subscription tier, compliance summary. Requires auth. |
+| `departi_get_profile` | Authenticated user's profile: nationalities, tax residence, tier, travel history, and live compliance snapshot. |
 
 ## Quick Start
 
@@ -81,11 +81,11 @@ For personalized results (visa checks based on your nationality, Schengen tracki
 **Visa + Tax (multi-tool):**
 > I'm American and planning to work remotely from Lisbon for 3 months starting in September. What visa do I need, and what are the tax implications for my US taxes?
 
-**Schengen tracking:**
-> How many Schengen days do I have left? I've been in Portugal since March and Spain since May.
+**Schengen tracking with permit:**
+> How many Schengen days do I have left? I have a Portuguese D7 visa valid until 2027 and I've visited Spain and France this year.
 
 **Trip planning (multi-tool):**
-> I want to spend October in Split, Croatia. Find me a place to stay under €1,200/month, some local experiences, and check if I need a visa.
+> I want to spend October in Split, Croatia. Find me a place to stay under €1,200/month, flights from Brussels, some local experiences, and check if I need a visa.
 
 **Tax residency comparison:**
 > Compare the tax implications of establishing tax residency in Portugal vs Bulgaria as a US freelancer earning $120K/year.
@@ -125,10 +125,10 @@ https://departi.eu/.well-known/oauth-authorization-server
 
 ## Data Coverage
 
-- **Visa data:** 43 European destination countries, all nationalities
-- **Tax profiles:** 43 countries with income tax, social security, treaty, and filing data
-- **Accommodation:** 105 European destinations with 6,400+ persona-scored properties
-- **Transport:** Flights, trains, buses across Europe
+- **Visa data:** 406 origin countries × 42 European destinations
+- **Tax profiles:** 49 countries with income tax, social security, treaty, and filing data
+- **Accommodation:** 189 European destinations with curated properties
+- **Transport:** Flights across Europe via Duffel + Travelpayouts
 - **Experiences:** Activities and tours in all covered destinations
 
 ## Links
