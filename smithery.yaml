@@ -1,5 +1,5 @@
 name: departi
-description: Travel compliance and trip planning for digital nomads — visa requirements, tax residency analysis, Schengen day tracking, and curated accommodation, transport, and experience search across 189 European destinations.
+description: Travel-compliance intelligence and curated booking for digital nomads — permit-aware Schengen tracking, tax-residency analysis, visa requirements, and persona-curated accommodation, transport, and experience search across 189 European destinations.
 vendor: Departi
 sourceUrl: https://github.com/Departi/mcp-server
 homepage: https://departi.eu
