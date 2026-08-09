@@ -9,20 +9,20 @@
                             "idempotentHint": true,
                             "openWorldHint": false
                   },
-                  "description": "Visa requirements for 43 European countries. Covers tourist, nomad, work, study, retirement. Includes destination context. Personalizes when registered.",
+                  "description": "Returns entry/visa options for a traveller of a given nationality going to a destination. Each option includes: visa type, whether required, max stay, remote-work eligibility, cost, processing time, and application notes — sourced from official immigration authorities. Use for 'what visa do I need'. For Schengen day counting use departi_track_schengen; for tax consequences use departi_check_tax.",
                   "inputSchema": {
                             "type": "object",
                             "properties": {
-                                        "nationality": { "type": "string", "description": "ISO alpha-2, e.g. 'BE'" },
-                                        "destination": { "type": "string", "description": "ISO alpha-2, e.g. 'PT'" },
+                                        "nationality": { "type": "string", "description": "Citizenship/passport, ISO alpha-2, e.g. 'BE'. This is passport country, not tax residence." },
+                                        "destination": { "type": "string", "description": "Destination country, ISO alpha-2, e.g. 'PT'." },
                                         "purpose": {
                                                       "type": "string",
-                                                      "description": "e.g. 'tourism', 'remote_work', 'business', 'study', 'retirement'",
+                                                      "description": "One of 'tourism', 'remote_work', 'business', 'study', 'retirement'.",
                                                       "default": "tourism"
                                         },
-                                        "duration": { "type": "integer", "description": "Stay in days" },
-                                        "locale": { "type": "string", "default": "en" },
-                                        "currency": { "type": "string", "default": "EUR" }
+                                        "duration": { "type": "integer", "description": "Intended stay in days, integer > 0." },
+                                        "locale": { "type": "string", "description": "Output language.", "default": "en" },
+                                        "currency": { "type": "string", "description": "Currency for costs.", "default": "EUR" }
                             },
                             "required": ["nationality", "destination", "duration"]
                   }
@@ -36,7 +36,7 @@
                             "idempotentHint": true,
                             "openWorldHint": false
                   },
-                  "description": "Schengen 90/180 calculator with tax residency warnings. Persistent tracking when registered.",
+                  "description": "Calculates Schengen 90/180 short-stay status from a list of stays. Returns days used, days remaining, status (safe/warning/critical/exceeded), projected limit date. For residence-permit holders, excludes days in the permit-issuing country while counting other Schengen states. EU/EEA nationals are exempt.",
                   "inputSchema": {
                             "type": "object",
                             "properties": {
@@ -45,15 +45,26 @@
                                                       "items": {
                                                                       "type": "object",
                                                                       "properties": {
-                                                                                        "country": { "type": "string" },
-                                                                                        "entryDate": { "type": "string", "format": "date" },
-                                                                                        "exitDate": { "type": "string", "format": "date" }
+                                                                                        "country": { "type": "string", "description": "ISO alpha-2 country code." },
+                                                                                        "entryDate": { "type": "string", "format": "date", "description": "YYYY-MM-DD." },
+                                                                                        "exitDate": { "type": "string", "format": "date", "description": "YYYY-MM-DD." }
                                                                       },
                                                                       "required": ["country", "entryDate", "exitDate"]
-                                                      }
+                                                      },
+                                                      "description": "Array of stays with country, entry and exit dates."
                                         },
-                                        "referenceDate": { "type": "string", "format": "date" },
-                                        "nationality": { "type": "string" },
+                                        "referenceDate": { "type": "string", "format": "date", "description": "ISO date to evaluate window at. Default: today." },
+                                        "nationality": { "type": "string", "description": "Citizenship, ISO-2. EU/EEA = exempt from counting." },
+                                        "residencePermit": {
+                                                      "type": "object",
+                                                      "description": "When present and active, days in issuingCountry are excluded from the 90/180 count.",
+                                                      "properties": {
+                                                                      "issuingCountry": { "type": "string", "description": "ISO-2 country that issued the permit." },
+                                                                      "validFrom": { "type": "string", "format": "date" },
+                                                                      "validUntil": { "type": "string", "format": "date" }
+                                                      },
+                                                      "required": ["issuingCountry", "validFrom", "validUntil"]
+                                        },
                                         "locale": { "type": "string", "default": "en" },
                                         "currency": { "type": "string", "default": "EUR" }
                             },
@@ -69,24 +80,24 @@
                             "idempotentHint": true,
                             "openWorldHint": false
                   },
-                  "description": "Tax residency analysis for 43 countries. Treaties, DN regimes, social security. Advisory only.",
+                  "description": "Assesses tax-residency risk and double-tax-treaty position for a traveller in a destination. Returns: whether the stay risks triggering destination tax residency (threshold + day-counting method), treaty provisions (Art.15, tie-breaker, social security, withholding), any digital-nomad tax regime, and FEIE context for US citizens. Advisory only, not tax advice.",
                   "inputSchema": {
                             "type": "object",
                             "properties": {
-                                        "nationality": { "type": "string" },
-                                        "taxResidence": { "type": "string", "description": "Current tax home country" },
-                                        "destination": { "type": "string" },
-                                        "duration": { "type": "integer" },
+                                        "nationality": { "type": "string", "description": "Citizenship/passport, ISO-2. Drives citizenship-based obligations (e.g. US worldwide taxation). May differ from tax residence." },
+                                        "taxResidence": { "type": "string", "description": "Current country of tax residence, ISO-2. Selects treaty 'resident state'. Can differ from nationality." },
+                                        "destination": { "type": "string", "description": "Country being visited, ISO-2." },
+                                        "duration": { "type": "integer", "description": "Stay in days." },
                                         "purpose": {
                                                       "type": "string",
-                                                      "description": "e.g. 'tourism', 'remote_work', 'business'",
+                                                      "description": "One of 'tourism', 'remote_work', 'business'.",
                                                       "default": "tourism"
                                         },
                                         "employmentType": {
                                                       "type": "string",
-                                                      "description": "e.g. 'employed', 'self_employed', 'company_director', 'retired'"
+                                                      "description": "One of 'employed', 'self_employed', 'company_director', 'retired'. Affects PE/treaty analysis."
                                         },
-                                        "yearToDateDays": { "type": "integer", "default": 0 },
+                                        "yearToDateDays": { "type": "integer", "description": "Days already spent in destination this tax year.", "default": 0 },
                                         "locale": { "type": "string", "default": "en" },
                                         "currency": { "type": "string", "default": "EUR" }
                             },
@@ -102,25 +113,25 @@
                             "idempotentHint": true,
                             "openWorldHint": true
                   },
-                  "description": "Accommodation search across European destinations. Scored by traveler type. Returns booking links.",
+                  "description": "Searches bookable accommodation and returns a ranked list of stays with: name, property type, nightly price, star/guest rating, key facilities (wifi, kitchen), persona fit score, and booking deep-link. Curated for traveller type — e.g. long-stay nomad apartments vs weekend hotels. For transport use departi_search_transport; for activities use departi_search_experiences. Empty list if no inventory matches.",
                   "inputSchema": {
                             "type": "object",
                             "properties": {
-                                        "destination": { "type": "string" },
-                                        "checkin": { "type": "string", "format": "date" },
-                                        "checkout": { "type": "string", "format": "date" },
-                                        "guests": { "type": "integer", "default": 1 },
-                                        "rooms": { "type": "integer", "default": 1 },
-                                        "maxPrice": { "type": "number", "description": "Per night in EUR" },
+                                        "destination": { "type": "string", "description": "ISO-2 country or city/slug, e.g. 'PT' or 'lisbon'." },
+                                        "checkin": { "type": "string", "format": "date", "description": "Check-in date, YYYY-MM-DD." },
+                                        "checkout": { "type": "string", "format": "date", "description": "Check-out date, strictly after checkin." },
+                                        "guests": { "type": "integer", "description": "Number of guests.", "default": 1 },
+                                        "rooms": { "type": "integer", "description": "Number of rooms.", "default": 1 },
+                                        "maxPrice": { "type": "number", "description": "Max per-night price in currency." },
                                         "currency": { "type": "string", "default": "EUR" },
                                         "locale": { "type": "string", "default": "en" },
                                         "persona": {
                                                       "type": "string",
-                                                      "description": "e.g. 'culture_explorer', 'foodie', 'adventure'"
+                                                      "description": "e.g. 'culture_explorer', 'foodie', 'adventure' — biases scoring."
                                         },
                                         "traveler_type": {
                                                       "type": "string",
-                                                      "description": "e.g. 'digital_nomad', 'slow_traveler', 'weekend_breaker'"
+                                                      "description": "e.g. 'digital_nomad', 'slow_traveler', 'weekend_breaker' — biases inventory."
                                         }
                             },
                             "required": ["destination", "checkin", "checkout"]
@@ -129,30 +140,32 @@
           {
                   "name": "departi_search_transport",
                   "annotations": {
-                            "title": "Search Flights",
+                            "title": "Search Transport",
                             "readOnlyHint": true,
                             "destructiveHint": false,
                             "idempotentHint": true,
                             "openWorldHint": true
                   },
-                  "description": "Flight search: budget and full-service carriers. Returns pricing, stops, booking links.",
+                  "description": "Searches flights between two places and returns a ranked list with: carrier, price, cabin class, duration, stops, departure/arrival times, and booking deep-link. Sourced across providers (Duffel + Travelpayouts) for broad full-service and low-cost coverage. For accommodation use departi_search_accommodation; for activities use departi_search_experiences. Prices are indicative — book via returned link. Empty list if no route found.",
                   "inputSchema": {
                             "type": "object",
                             "properties": {
-                                        "origin": { "type": "string", "description": "IATA or city, e.g. 'BRU'" },
-                                        "destination": { "type": "string", "description": "IATA or city, e.g. 'LIS'" },
-                                        "departure_date": { "type": "string", "format": "date" },
-                                        "return_date": { "type": "string", "format": "date" },
-                                        "passengers": { "type": "integer", "default": 1 },
-                                        "mode": {
+                                        "origin": { "type": "string", "description": "Departure IATA code or city, e.g. 'BRU' or 'Brussels'." },
+                                        "destination": { "type": "string", "description": "Arrival IATA code or city, e.g. 'LIS' or 'Lisbon'." },
+                                        "departure_date": { "type": "string", "format": "date", "description": "ISO date, today or future." },
+                                        "return_date": { "type": "string", "format": "date", "description": "Optional ISO date after departure_date for round trip." },
+                                        "passengers": { "type": "integer", "description": "Number of passengers.", "default": 1 },
+                                        "cabin_class": {
                                                       "type": "string",
-                                                      "default": "all",
-                                                      "description": "'all', 'flights', or 'ground'"
+                                                      "description": "One of 'economy', 'premium_economy', 'business', 'first'.",
+                                                      "default": "economy"
                                         },
                                         "traveler_type": {
                                                       "type": "string",
-                                                      "description": "e.g. 'digital_nomad', 'weekend_breaker'"
-                                        }
+                                                      "description": "Optional persona hint, e.g. 'digital_nomad', 'weekend_breaker'."
+                                        },
+                                        "currency": { "type": "string", "default": "EUR" },
+                                        "locale": { "type": "string", "default": "en" }
                             },
                             "required": ["origin", "destination", "departure_date"]
                   }
@@ -166,25 +179,25 @@
                             "idempotentHint": true,
                             "openWorldHint": true
                   },
-                  "description": "Tours, activities, local experiences. Matched to traveler personality. Returns booking links.",
+                  "description": "Searches bookable tours, activities and local experiences and returns a ranked list with: title, category (cultural/culinary/adventure/wellness/nature), duration, price, persona-fit score, and booking deep-link. Matched to traveller personality. For accommodation use departi_search_accommodation; for transport use departi_search_transport. Empty list if nothing matches.",
                   "inputSchema": {
                             "type": "object",
                             "properties": {
-                                        "destination": { "type": "string" },
+                                        "destination": { "type": "string", "description": "ISO-2 country or city/slug, e.g. 'lisbon'." },
                                         "categories": {
                                                       "type": "array",
                                                       "items": { "type": "string" },
-                                                      "description": "e.g. 'cultural', 'culinary', 'adventure', 'wellness', 'nature'"
+                                                      "description": "Filter by: 'cultural', 'culinary', 'adventure', 'wellness', 'nature'."
                                         },
                                         "persona": {
                                                       "type": "string",
-                                                      "description": "e.g. 'culture_explorer', 'foodie', 'adventure'"
+                                                      "description": "e.g. 'culture_explorer', 'foodie', 'adventure'."
                                         },
                                         "traveler_type": {
                                                       "type": "string",
-                                                      "description": "e.g. 'digital_nomad', 'slow_traveler'"
+                                                      "description": "e.g. 'digital_nomad', 'slow_traveler'."
                                         },
-                                        "limit": { "type": "integer", "default": 10 }
+                                        "limit": { "type": "integer", "description": "Max results.", "default": 10 }
                             },
                             "required": ["destination"]
                   }
@@ -198,7 +211,7 @@
                             "idempotentHint": true,
                             "openWorldHint": false
                   },
-                  "description": "User profile: preferences, travel history, subscription tier, compliance summary. Requires auth.",
+                  "description": "Returns the authenticated user's Departi profile: nationalities, tax residence, subscription tier, travel-history summary, and live compliance snapshot (Schengen/tax-residency status). Requires OAuth authentication. Use to personalise other tools or answer 'where do I stand'. Read-only, no parameters.",
                   "inputSchema": { "type": "object", "properties": {}, "required": [] }
           }
     ]
