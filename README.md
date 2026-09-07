@@ -143,6 +143,7 @@ https://departi.eu/.well-known/oauth-authorization-server
 - Official MCP Registry: `eu.departi/travel-compliance` v3.2.0
 - [Glama](https://glama.ai/mcp/servers/Departi/mcp-server)
 - [mcp.so](https://mcp.so/servers/departi-travel-compliance-curated-booking) (Published and Featured, Verified)
+- [Smithery](https://smithery.ai/servers/departi/travel-compliance)
 
 ## Support
 
