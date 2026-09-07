@@ -37,7 +37,7 @@ All 7 tools are read-only with full MCP tool annotations.
 
 | Tool | Description |
 |---|---|
-| `departi_get_profile` | Authenticated user's profile: nationalities, tax residence, tier, travel history, and live compliance snapshot. |
+| `departi_get_profile` | Returns the authenticated user's Departi profile: nationality, tax residence, subscription tier, traveller persona, and preferences. No PII (name, email, date of birth) is returned. Requires OAuth. |
 
 ## Quick Start
 
@@ -137,6 +137,12 @@ https://departi.eu/.well-known/oauth-authorization-server
 - [Website](https://departi.eu)
 - [Privacy Policy](https://departi.eu/privacy)
 - [Terms of Service](https://departi.eu/terms)
+
+## Also Listed On
+
+- Official MCP Registry: `eu.departi/travel-compliance` v3.2.0
+- [Glama](https://glama.ai/mcp/servers/Departi/mcp-server)
+- [mcp.so](https://mcp.so/servers/departi-travel-compliance-curated-booking) (Published and Featured, Verified)
 
 ## Support
 
